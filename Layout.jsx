@@ -19,6 +19,15 @@ const StyledMenu = styled.div`
       }
     }
   }
+  .wrapper {
+    margin: 40px auto;
+    max-width: 1024px;
+    width: 100%;
+
+    @media (min-width: 1044px) {
+      margin: 40px 10px;
+    }
+  }
   .logout {
     position: fixed;
     bottom: 5px;
@@ -65,10 +74,10 @@ export default ({ children }) => {
           Payments
         </NavLink>
       </div>
+      <div className="wrapper">{children}</div>
       <Button onClick={handleLogout} className="logout">
         Log Out
       </Button>
-      {children}
     </StyledMenu>
   );
 };
