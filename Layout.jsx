@@ -23,9 +23,9 @@ const StyledMenu = styled.div`
     margin: 40px auto;
     max-width: 1024px;
     width: 100%;
-
-    @media (min-width: 1044px) {
+    @media (max-width: 1044px) {
       margin: 40px 10px;
+      width: calc(100% - 20px);
     }
   }
   .logout {
