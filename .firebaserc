@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "accounting-app-951b4"
+  },
+  "targets": {
+    "accounting-app-951b4": {
+      "hosting": {
+        "accounting-app-951b4": [
+          "accounting-app-951b4"
+        ]
+      }
+    }
+  }
+}

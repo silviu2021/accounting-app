@@ -1,0 +1,14 @@
+{
+  "hosting": [
+    {
+      "target": "accounting-app-951b4",
+      "public": "./dist",
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "index.html"
+        }
+      ]
+    }
+  ]
+}
