@@ -5,7 +5,7 @@ import Button from "../components/common/Button";
 import Modal from "../components/common/Modal";
 import styled from "styled-components";
 import { useFirebase } from "../components/contexts/Firebase";
-import { doc, addDoc, collection, onSnapshot, query } from "firebase/firestore";
+import { addDoc, collection, onSnapshot, query } from "firebase/firestore";
 
 const StyledProjects = styled.div`
   form {
