@@ -2,15 +2,33 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Layout from "../Layout";
 import Table from "../components/common/Table";
+import Button from "../components/common/Button";
+import Modal from "../components/common/Modal";
 import { useFirebase } from "../components/contexts/Firebase";
 import {
+  addDoc,
   getDocs,
-  doc,
-  getDoc,
   collection,
   onSnapshot,
   query,
 } from "firebase/firestore";
+
+const StyledPayments = styled.div`
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    label {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .err {
+      color: red;
+    }
+  }
+`;
 
 export default () => {
   const _firebase = useFirebase();
@@ -20,6 +38,10 @@ export default () => {
   const [projects, setProjects] = useState([]);
   const [data, setData] = useState([]);
   const [addModalOpen, setAddModalOpen] = useState(false);
+
+  const [errMsg, setErrMsg] = useState("");
+  const [selectedParent, setSelectedParent] = useState("none");
+  const [selectedProject, setSelectedProject] = useState("none");
 
   useEffect(() => {
     let unsubscribe = () => {};
@@ -84,23 +106,6 @@ export default () => {
     },
   ];
 
-  const StyledPayments = styled.div`
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      label {
-        display: flex;
-        width: 100%;
-        justify-content: space-between;
-        gap: 20px;
-      }
-      .err {
-        color: red;
-      }
-    }
-  `;
-
   const handlePaymentModalOpen = () => {
     setAddModalOpen(true);
   };
@@ -111,26 +116,22 @@ export default () => {
 
   const handlePaymentCreate = async (e) => {
     e.preventDefault();
-    // if (name.length < 3) {
-    //   setErrMsg("Please set name for the parent");
-    // } else {
-    //   if (childName.length < 3) {
-    //     setErrMsg("Please set name for the chield");
-    //   } else {
-    //     await addDoc(collection(db, "parents"), {
-    //       childName: childName,
-    //       email: email,
-    //       phone: phone,
-    //       name: name,
-    //     });
+    if (selectedParent == "none") {
+      setErrMsg("Please select a parent");
+    } else {
+      if (selectedProject == "none") {
+        setErrMsg("Please select a project");
+      } else {
+        await addDoc(collection(db, "payments"), {
+          parentId: selectedParent,
+          projectId: selectedProject,
+        });
 
-    //     setName("");
-    //     setChildName("");
-    //     setPhone("");
-    //     setEmail("");
-    //     setAddModalOpen(false);
-    //   }
-    // }
+        setSelectedParent("none");
+        setSelectedProject("none");
+        setAddModalOpen(false);
+      }
+    }
   };
 
   return (
@@ -146,49 +147,50 @@ export default () => {
           handleClose={handlePaymentModalClose}
         >
           <form onSubmit={handlePaymentCreate}>
-            {/* <label>
-              <span>Nume:</span>
-              <input
+            <label>
+              <span>Parent:</span>
+              <select
                 onChange={(e) => {
-                  setName(e.target.value);
+                  setSelectedParent(e.target.value);
                 }}
-                value={name}
-                type="text"
-              />
+                value={selectedParent}
+              >
+                <option value="none">Select One</option>
+                {parents.map((parent) => (
+                  <option key={parent.id} value={parent.id}>
+                    {parent.name}
+                  </option>
+                ))}
+              </select>
             </label>
             <label>
-              <span>Nume Copil:</span>
-              <input
+              <span>Project:</span>
+              <select
                 onChange={(e) => {
-                  setChildName(e.target.value);
+                  setSelectedProject(e.target.value);
                 }}
-                value={childName}
-                type="text"
-              />
+                value={selectedProject}
+              >
+                <option value="none">Select One</option>
+                {projects
+                  .filter(
+                    (prj) =>
+                      selectedParent != "none" &&
+                      !data.find(
+                        (d) =>
+                          d.parent.id == selectedParent &&
+                          d.project.id == prj.id
+                      )
+                  )
+                  .map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.name}
+                    </option>
+                  ))}
+              </select>
             </label>
 
-            <label>
-              <span>Email:</span>
-              <input
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-                value={email}
-                type="text"
-              />
-            </label>
-
-            <label>
-              <span>Telefon:</span>
-              <input
-                onChange={(e) => {
-                  setPhone(e.target.value);
-                }}
-                value={phone}
-                type="text"
-              />
-            </label>
-            {errMsg && <div className="err"> {errMsg}</div>} */}
+            {errMsg && <div className="err"> {errMsg}</div>}
             <button type="submit">Add Payment</button>
           </form>
         </Modal>
