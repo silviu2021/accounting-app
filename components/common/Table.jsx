@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import UpArrow from "../../icons/up-arrow.svg?react";
 import DownArrow from "../../icons/down-arrow.svg?react";
+import DeleteIcon from "../../icons/delete.svg?react";
 
 const StyledTable = styled.div`
   .headers {
@@ -44,7 +45,7 @@ const StyledTable = styled.div`
   }
 `;
 
-export default ({ data, headers }) => {
+export default ({ data, headers, deleteAction }) => {
   const [expandedCards, setExpandedCards] = useState([]);
 
   const handleExpand = (id) => () => {
@@ -57,7 +58,11 @@ export default ({ data, headers }) => {
     <StyledTable>
       <div
         className="headers"
-        style={{gridTemplateColumns:`repeat(${headers.filter((header) => header.isMain).length + 1}, 1fr)`}}
+        style={{
+          gridTemplateColumns: `repeat(${
+            headers.filter((header) => header.isMain).length + 1
+          }, 1fr)`,
+        }}
       >
         {headers
           .filter((header) => header.isMain)
@@ -73,7 +78,11 @@ export default ({ data, headers }) => {
         {data.map((card, i) => (
           <div
             key={card.id}
-            style={{gridTemplateColumns:`repeat(${headers.filter((header) => header.isMain).length + 1}, 1fr)`}}
+            style={{
+              gridTemplateColumns: `repeat(${
+                headers.filter((header) => header.isMain).length + 1
+              }, 1fr)`,
+            }}
             className={`card ${i == data.length - 1 ? "last" : ""}`}
           >
             {headers
@@ -86,6 +95,11 @@ export default ({ data, headers }) => {
                 {expandedCards.find((c) => c == card.id) && <UpArrow />}
                 {!expandedCards.find((c) => c == card.id) && <DownArrow />}
               </span>
+              {deleteAction && (
+                <span onClick={deleteAction(card.id)}>
+                  <DeleteIcon />
+                </span>
+              )}
             </div>
             {expandedCards.find((c) => c == card.id) && (
               <div className="details">

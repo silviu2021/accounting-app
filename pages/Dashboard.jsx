@@ -4,6 +4,8 @@ import Table from "../components/common/Table";
 import styled from "styled-components";
 import { useFirebase } from "../components/contexts/Firebase";
 import {
+  doc,
+  setDoc,
   addDoc,
   getDocs,
   collection,
@@ -92,10 +94,50 @@ export default () => {
     },
   ];
 
+  const handleDelete = (id) => async () => {
+    const parentId = id.split("-")[0];
+    const projectId = id.split("-")[1];
+
+    const parent = parents.find((p) => p.id == parentId);
+
+    delete parent.id;
+
+    if (!parent.missingProjects) parent.missingProjects = [];
+
+    parent.missingProjects.push(projectId);
+
+    await setDoc(doc(db, "parents", parentId), { ...parent }, { merge: true });
+  };
+
   return (
     <Layout>
       <StyledDashBoard>
-        <Table data={data} headers={headers} />
+        <h2>De platit</h2>
+        <Table
+          data={parents
+            .map((parent) =>
+              projects.map((project) => ({ ...project, parent }))
+            )
+            .flat()
+            .map((project) => ({
+              id: `${project.parent.id}-${project.id}`,
+              parentId: project.parent.id,
+              projectId: project.id,
+              missingProjects: project.parent.missingProjects || [],
+              parentChieldName: project.parent.childName,
+              projectName: project.name,
+              projectCost: project.cost,
+            }))
+            .filter(
+              (fpy) =>
+                !payments.find(
+                  (py) =>
+                    py.parentId == fpy.parentId && py.projectId == fpy.projectId
+                ) && !fpy.missingProjects.find((g) => g == fpy.projectId)
+            )}
+          headers={headers}
+          deleteAction={handleDelete}
+        />
       </StyledDashBoard>
     </Layout>
   );
