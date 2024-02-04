@@ -74,7 +74,7 @@ export default () => {
     return () => {
       unsubscribe();
     };
-  });
+  }, []);
 
   const headers = [
     {
